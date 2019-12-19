@@ -40,6 +40,7 @@ class Board:
             for i in range(8):
                 for j in range(8):
                     # piece.can_move(Position([i,j]))
+                    print("hello")
                     pass
 
 #############################################################
