@@ -14,10 +14,3 @@ class Rook(Piece):
                          piece_type=2,
                          piece_number=piece_number)
 
-    def valid_directions(self):
-        # Determines valid moves for rook that are within the bounds of the
-        # board. Doesn't account for other pieces being in the way.
-        directions = ([1, 0], [0, 1], [-1, 0], [0, -1])
-        m = [7] * len(directions)
-        return (directions, m)
-

@@ -11,11 +11,3 @@ class Queen(Piece):
                          Queen.init_position[color],
                          Queen.init_moves,
                          piece_type=1, piece_number=0)
-
-    def valid_directions(self):
-        # Determines valid moves for queen that are within the bounds of the
-        # board. Doesn't account for other pieces being in the way.
-        directions = ([1, 0], [1, 1], [0, 1], [-1, 1],
-                      [-1, 0], [-1, -1], [0, -1], [1, -1])
-        m = [7] * len(directions)
-        return (directions, m)

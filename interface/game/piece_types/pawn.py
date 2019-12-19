@@ -43,12 +43,3 @@ class Pawn(Piece):
                          piece_type=5,
                          piece_number=piece_number)
 
-    def valid_directions(self):
-        # Determines valid moves for bishop that are within the bounds of the
-        # board. Doesn't account for other pieces being in the way.
-        directions = ([0, 1], [0, -1])
-        m = [1]
-        if (self.piece_number, self.position) in Pawn.init_position[self.color].items():
-            # Can make a double move if still at the initial position
-            m[0] += 1
-        return ((directions[self.color],), m)

@@ -16,11 +16,3 @@ class Knight(Piece):
                          Knight.init_moves[color][piece_number],
                          piece_type=4,
                          piece_number=piece_number)
-
-    def valid_directions(self):
-        # Determines valid moves for knight that are within the bounds of the
-        # board. Doesn't account for other pieces being in the way.
-        directions = ([1, 2], [2, 1], [2, -1], [1, -2],
-                      [-1, -2], [-2, -1], [-2, 1], [-1, 2])
-        m = [1] * len(directions)
-        return (directions, m)

@@ -12,11 +12,3 @@ class King(Piece):
                          King.init_moves,
                          piece_type=0,
                          piece_number=0)
-
-    def valid_directions(self):
-        # Determines valid moves for king that are within the bounds of the
-        # board. Doesn't account for other pieces being in the way.
-        directions = ([1, 0], [1, 1], [0, 1], [-1, 1],
-                      [-1, 0], [-1, -1], [0, -1], [1, -1])
-        m = [1] * len(directions)
-        return (directions, m)

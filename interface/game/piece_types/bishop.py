@@ -13,10 +13,3 @@ class Bishop(Piece):
                          Bishop.init_moves,
                          piece_type=3,
                          piece_number=piece_number)
-
-    def valid_directions(self):
-        # Determines valid moves for bishop that are within the bounds of the
-        # board. Doesn't account for other pieces being in the way.
-        directions = ([1, 1], [-1, 1], [1, -1], [-1, -1])
-        m = [7] * len(directions)
-        return (directions, m)
