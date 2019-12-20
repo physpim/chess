@@ -1,4 +1,4 @@
-from .game import Position, Board, Dynamics
+from .game import Position, Board
 
 
 class Ui:
@@ -21,7 +21,6 @@ class Ui:
 
     def __init__(self):
         self.board = Board()
-        self.dynamics = Dynamics()
         self.draw()
 
     def draw(self):
@@ -57,17 +56,17 @@ class Ui:
         # Recalculate board
         self.board.recalculate(selected_piece, position)
         # Update dynamics attributes
-        self.dynamics.turn_counter += 1
-        self.dynamics.turn_color = int(not self.dynamics.turn_color)
+        self.board.turn_counter += 1
+        self.board.turn_color = int(not self.board.turn_color)
         # Redraw the board
         self.draw()
 
     def select_piece(self) -> int:
         # Asks the user to select a piece to make a move with
-        question = Ui.color_dict[self.dynamics.turn_color] + \
+        question = Ui.color_dict[self.board.turn_color] + \
             ", your turn! Please select a piece. \n"
         index = -1
-        while index == -1 or self.board.pieces[index].color != self.dynamics.turn_color:
+        while index == -1 or self.board.pieces[index].color != self.board.turn_color:
             coordinate = input(question)
             position = self.coordinate2position(coordinate)
             index = self.board.find_piece(position)

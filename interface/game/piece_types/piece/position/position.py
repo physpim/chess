@@ -3,8 +3,6 @@ class Position:
     def __init__(self, position: list):
         if len(position) != 2:
             raise ValueError("position length is not 2")
-        if not (0 <= position[0] <= 7 and 0 <= position[1] <= 7):
-            raise ValueError("position is not within the board")
         self.position = position
 
     def __add__(self, other):
@@ -22,3 +20,15 @@ class Position:
         # Overloading the equals (==) operator
         return self.position[0] == other.position[0] and \
             self.position[1] == other.position[1]
+
+    def __str__(self) -> str:
+        return 'Position([' + str(self.position[0]) + ',' + str(self.position[0]) + '])'
+    
+    def __repr__(self):
+        return str(self)
+
+    def within_board(self) -> bool:
+        if 0 <= self.position[0] <= 7 and 0 <= self.position[1] <= 7:
+            return True
+        else:
+            return False

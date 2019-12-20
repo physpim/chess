@@ -42,4 +42,3 @@ class Pawn(Piece):
                          Pawn.init_moves[color][piece_number],
                          piece_type=5,
                          piece_number=piece_number)
-
