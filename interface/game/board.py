@@ -38,9 +38,10 @@ class Board:
         return index
 
     def recalculate(self, selected_piece: int, position: Position):
-        # Moves selected_piece to position and recalculates the board
+        # Move selected_piece to position
         self.pieces[selected_piece].position = position
-        for piece_number, piece in enumerate(self.pieces):
+        # Recalculate the moves for all pieces
+        for piece_number, _ in enumerate(self.pieces):
             self.piece_moves(piece_number)
 
     # Methods that calculate where piece type can move
@@ -57,7 +58,6 @@ class Board:
         self.pieces[piece_number].moves = []
         for direction in directions:
             field = self.pieces[piece_number].position + direction
-            print(field)
             if field.within_board() == True:
                 piece_on_field = self.find_piece(field)
                 if piece_on_field == -1 or \

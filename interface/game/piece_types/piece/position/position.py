@@ -22,7 +22,7 @@ class Position:
             self.position[1] == other.position[1]
 
     def __str__(self) -> str:
-        return 'Position([' + str(self.position[0]) + ',' + str(self.position[0]) + '])'
+        return 'Position([' + str(self.position[0]) + ',' + str(self.position[1]) + '])'
     
     def __repr__(self):
         return str(self)
