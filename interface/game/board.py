@@ -38,6 +38,10 @@ class Board:
         return index
 
     def recalculate(self, selected_piece: int, position: Position):
+        # Check if move captures other piece
+        captured_piece = self.find_piece(position)
+        if captured_piece != -1:
+            self.pieces[captured_piece].alive = False
         # Move selected_piece to position
         self.pieces[selected_piece].position = position
         # Recalculate the moves for all pieces
@@ -130,15 +134,16 @@ class Board:
                     self.pieces[piece_number].moves.append(field)
 
     def pawn(self, piece_number: int) -> list:
-        # bug somewhere in here
         directions = {0: Position([0,1]), 1: Position([0,-1])}
         current_position = self.pieces[piece_number].position
-        initial_position  = Pawn.init_position[self.pieces[piece_number].color][self.pieces[piece_number].piece_number]
+        initial_position  = Pawn.init_position[self.pieces[piece_number].color] \
+            [self.pieces[piece_number].piece_number]
         if  current_position == initial_position:
             n_moves = 2
         else: n_moves = 1
         for n in range(1, n_moves+1):
-            field = self.pieces[piece_number].position + n * directions[self.pieces[piece_number].color]
+            field = self.pieces[piece_number].position + \
+                n * directions[self.pieces[piece_number].color]
             if field.within_board() == True:
                 piece_on_field = self.find_piece(field)
                 if piece_on_field == -1:
