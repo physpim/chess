@@ -48,8 +48,9 @@ class Board:
         for piece_number, _ in enumerate(self.pieces):
             self.pieces[piece_number].moves = []
             self.piece_moves(piece_number)
+        # Detect check
+        self.check = self.ischeck(int(not self.turn_color))     
 
-    # Methods that calculate where piece type can move
     def piece_moves(self, piece_number: int):
         # Ensures the right method is called for the specific piece type
         type_dict = {0: self.king, 1: self.queen, 2: self.rook,
@@ -58,6 +59,7 @@ class Board:
         return func(piece_number)
 
     def king(self, piece_number: int) -> list:
+        # Calculates which moves the king can make
         directions = [Position([0, 1]), Position([1, 0]),
                       Position([0, -1]), Position([-1, 0]),
                       Position([1, 1]), Position([1, -1]),
@@ -71,6 +73,7 @@ class Board:
                     self.pieces[piece_number].moves.append(field)
 
     def queen(self, piece_number: int) -> list:
+        # Calculates which moves the queen can make
         directions = [Position([0, 1]), Position([1, 0]),
                       Position([0, -1]), Position([-1, 0]),
                       Position([1, 1]), Position([1, -1]),
@@ -89,6 +92,7 @@ class Board:
                         break
 
     def rook(self, piece_number: int) -> list:
+        # Calculates which moves a rook can make
         directions = [Position([0, 1]), Position([1, 0]),
                       Position([0, -1]), Position([-1, 0])]
         for direction in directions:
@@ -105,6 +109,7 @@ class Board:
                         break
 
     def bishop(self, piece_number: int) -> list:
+        # Calculates which moves a bishop can make
         directions = [Position([1, 1]), Position([-1, 1]), 
                       Position([1, -1]), Position([-1, -1])]
         for direction in directions:
@@ -121,6 +126,7 @@ class Board:
                         break
 
     def knight(self, piece_number: int) -> list:
+        # Calculates which moves a knight can make
         directions = [Position([1, 2]), Position([2, 1]),
                       Position([1, -2]), Position([-2, 1]),
                       Position([-1,2]), Position([2,-1]),
@@ -134,6 +140,7 @@ class Board:
                     self.pieces[piece_number].moves.append(field)
 
     def pawn(self, piece_number: int) -> list:
+        # Calculates which moves a pawn can make
         directions = {0: Position([0,1]), 1: Position([0,-1])}
         current_position = self.pieces[piece_number].position
         initial_position  = Pawn.init_position[self.pieces[piece_number].color] \
@@ -159,3 +166,15 @@ class Board:
                         self.pieces[piece_on_field].color != \
                         self.pieces[piece_number].color:
                     self.pieces[piece_number].moves.append(field)
+
+    def ischeck(self, color: int) -> bool:
+        # Detects if the current board is check
+        for n, piece in enumerate(self.pieces):
+            if piece.type == 0 and piece.color == color:
+                break
+        king_position = self.pieces[n].position
+        check = False
+        for piece in self.pieces:
+            if king_position in piece.moves:
+                check = True
+        return check
