@@ -42,6 +42,7 @@ class Board:
         self.pieces[selected_piece].position = position
         # Recalculate the moves for all pieces
         for piece_number, _ in enumerate(self.pieces):
+            self.pieces[piece_number].moves = []
             self.piece_moves(piece_number)
 
     # Methods that calculate where piece type can move
@@ -53,9 +54,10 @@ class Board:
         return func(piece_number)
 
     def king(self, piece_number: int) -> list:
-        directions = [Position([0, 1]), Position([1, 0]), Position([0, -1]), Position([-1, 0]),
-                      Position([1, 1]), Position([1, -1]), Position([-1, 1]), Position([-1, 1])]
-        self.pieces[piece_number].moves = []
+        directions = [Position([0, 1]), Position([1, 0]),
+                      Position([0, -1]), Position([-1, 0]),
+                      Position([1, 1]), Position([1, -1]),
+                      Position([-1, 1]), Position([-1, 1])]
         for direction in directions:
             field = self.pieces[piece_number].position + direction
             if field.within_board() == True:
@@ -63,19 +65,57 @@ class Board:
                 if piece_on_field == -1 or \
                         self.pieces[piece_on_field].color != self.pieces[piece_number].color:
                     self.pieces[piece_number].moves.append(field)
-        print(self.pieces[piece_number].moves)
 
     def queen(self, piece_number: int) -> list:
-        pass
+        directions = [Position([0, 1]), Position([1, 0]),
+                      Position([0, -1]), Position([-1, 0]),
+                      Position([1, 1]), Position([1, -1]),
+                      Position([-1, 1]), Position([-1, 1])]
+        for direction in directions:
+            for n in range(8):
+                field = self.pieces[piece_number].position + n * direction
+                if field.within_board() == True:
+                    piece_on_field = self.find_piece(field)
+                    if piece_on_field == -1 or \
+                            self.pieces[piece_on_field].color != self.pieces[piece_number].color:
+                        self.pieces[piece_number].moves.append(field)
 
     def rook(self, piece_number: int) -> list:
-        pass
+        directions = [Position([0, 1]), Position([1, 0]),
+                      Position([0, -1]), Position([-1, 0])]
+        for direction in directions:
+            for n in range(8):
+                field = self.pieces[piece_number].position + n * direction
+                if field.within_board() == True:
+                    piece_on_field = self.find_piece(field)
+                    if piece_on_field == -1 or \
+                            self.pieces[piece_on_field].color != self.pieces[piece_number].color:
+                        self.pieces[piece_number].moves.append(field)
 
     def bishop(self, piece_number: int) -> list:
-        pass
+        directions = [Position([1, 1]), Position([-1, 1]), 
+                      Position([1, -1]), Position([-1, -1])]
+        for direction in directions:
+            for n in range(8):
+                field = self.pieces[piece_number].position + n * direction
+                if field.within_board() == True:
+                    piece_on_field = self.find_piece(field)
+                    if piece_on_field == -1 or \
+                            self.pieces[piece_on_field].color != self.pieces[piece_number].color:
+                        self.pieces[piece_number].moves.append(field)
 
     def knight(self, piece_number: int) -> list:
-        pass
+        directions = [Position([1, 2]), Position([2, 1]),
+                      Position([1, -2]), Position([-2, 1]),
+                      Position([-1,2]), Position([2,-1]),
+                      Position([-1,-2]), Position([-2,-1])]
+        for direction in directions:
+            field = self.pieces[piece_number].position + direction
+            if field.within_board() == True:
+                piece_on_field = self.find_piece(field)
+                if piece_on_field == -1 or \
+                        self.pieces[piece_on_field].color != self.pieces[piece_number].color:
+                    self.pieces[piece_number].moves.append(field)
 
     def pawn(self, piece_number: int) -> list:
         pass

@@ -11,7 +11,7 @@ class Position:
         y = self.position[1] + other.position[1]
         return Position([x, y])
 
-    def __mul__(self, factor: int):
+    def __rmul__(self, factor: int):
         x = factor * self.position[0]
         y = factor * self.position[1]
         return Position([x, y])
