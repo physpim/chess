@@ -80,6 +80,7 @@ class Ui:
         coordinate = input(question)
         position = self.coordinate2position(coordinate)
         return position
+        # Implement check for selected field if it can move there
 
     def moves2text(self, selected_piece: int) -> str:
         # Turns a list of positions into a string with coordinates

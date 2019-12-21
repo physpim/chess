@@ -70,39 +70,51 @@ class Board:
         directions = [Position([0, 1]), Position([1, 0]),
                       Position([0, -1]), Position([-1, 0]),
                       Position([1, 1]), Position([1, -1]),
-                      Position([-1, 1]), Position([-1, 1])]
+                      Position([-1, 1]), Position([-1, -1])]
         for direction in directions:
-            for n in range(8):
+            for n in range(1, 8):
                 field = self.pieces[piece_number].position + n * direction
                 if field.within_board() == True:
                     piece_on_field = self.find_piece(field)
-                    if piece_on_field == -1 or \
-                            self.pieces[piece_on_field].color != self.pieces[piece_number].color:
+                    if piece_on_field == -1:
                         self.pieces[piece_number].moves.append(field)
+                    elif self.pieces[piece_on_field].color != self.pieces[piece_number].color:
+                        self.pieces[piece_number].moves.append(field)
+                        break
+                    else:
+                        break
 
     def rook(self, piece_number: int) -> list:
         directions = [Position([0, 1]), Position([1, 0]),
                       Position([0, -1]), Position([-1, 0])]
         for direction in directions:
-            for n in range(8):
+            for n in range(1, 8):
                 field = self.pieces[piece_number].position + n * direction
                 if field.within_board() == True:
                     piece_on_field = self.find_piece(field)
-                    if piece_on_field == -1 or \
-                            self.pieces[piece_on_field].color != self.pieces[piece_number].color:
+                    if piece_on_field == -1:
                         self.pieces[piece_number].moves.append(field)
+                    elif self.pieces[piece_on_field].color != self.pieces[piece_number].color:
+                        self.pieces[piece_number].moves.append(field)
+                        break
+                    else:
+                        break
 
     def bishop(self, piece_number: int) -> list:
         directions = [Position([1, 1]), Position([-1, 1]), 
                       Position([1, -1]), Position([-1, -1])]
         for direction in directions:
-            for n in range(8):
+            for n in range(1, 8):
                 field = self.pieces[piece_number].position + n * direction
                 if field.within_board() == True:
                     piece_on_field = self.find_piece(field)
-                    if piece_on_field == -1 or \
-                            self.pieces[piece_on_field].color != self.pieces[piece_number].color:
+                    if piece_on_field == -1:
                         self.pieces[piece_number].moves.append(field)
+                    elif self.pieces[piece_on_field].color != self.pieces[piece_number].color:
+                        self.pieces[piece_number].moves.append(field)
+                        break
+                    else:
+                        break
 
     def knight(self, piece_number: int) -> list:
         directions = [Position([1, 2]), Position([2, 1]),
@@ -118,4 +130,27 @@ class Board:
                     self.pieces[piece_number].moves.append(field)
 
     def pawn(self, piece_number: int) -> list:
-        pass
+        # bug somewhere in here
+        directions = {0: Position([0,1]), 1: Position([0,-1])}
+        current_position = self.pieces[piece_number].position
+        initial_position  = Pawn.init_position[self.pieces[piece_number].color][self.pieces[piece_number].piece_number]
+        if  current_position == initial_position:
+            n_moves = 2
+        else: n_moves = 1
+        for n in range(1, n_moves+1):
+            field = self.pieces[piece_number].position + n * directions[self.pieces[piece_number].color]
+            if field.within_board() == True:
+                piece_on_field = self.find_piece(field)
+                if piece_on_field == -1:
+                    self.pieces[piece_number].moves.append(field)
+                else: break
+        capture_directions = {0: [Position([1, 1]), Position([-1, 2])],
+                              1: [Position([1, -1]), Position([-1, -1])]}
+        for direction in capture_directions[self.pieces[piece_number].color]:
+            field = self.pieces[piece_number].position + direction
+            if field.within_board() == True:
+                piece_on_field = self.find_piece(field)
+                if piece_on_field != -1 and \
+                        self.pieces[piece_on_field].color != \
+                        self.pieces[piece_number].color:
+                    self.pieces[piece_number].moves.append(field)
