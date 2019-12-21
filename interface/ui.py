@@ -70,7 +70,7 @@ class Ui:
             coordinate = input(question)
             position = self.coordinate2position(coordinate)
             index = self.board.find_piece(position)
-            question = "No piece of yours at this field, try again!"
+            question = "No piece of yours at this field, try again! \n"
         return index
 
     def select_move(self, selected_piece: int) -> Position:
@@ -79,8 +79,11 @@ class Ui:
             self.moves2text(selected_piece) + "\n"
         coordinate = input(question)
         position = self.coordinate2position(coordinate)
+        while not position in self.board.pieces[selected_piece].moves:
+            question = "Your piece can't move to the selected field, try again! \n"
+            coordinate = input(question)
+            position = self.coordinate2position(coordinate)
         return position
-        # Implement check for selected field if it can move there
 
     def moves2text(self, selected_piece: int) -> str:
         # Turns a list of positions into a string with coordinates
