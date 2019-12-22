@@ -60,10 +60,10 @@ class Board:
 
     def king(self, piece_number: int) -> list:
         # Calculates which moves the king can make
-        directions = [Position([0, 1]), Position([1, 0]),
-                      Position([0, -1]), Position([-1, 0]),
-                      Position([1, 1]), Position([1, -1]),
-                      Position([-1, 1]), Position([-1, 1])]
+        directions = [Position(0, 1), Position(1, 0),
+                      Position(0, -1), Position(-1, 0),
+                      Position(1, 1), Position(1, -1),
+                      Position(-1, 1), Position(-1, 1)]
         for direction in directions:
             field = self.pieces[piece_number].position + direction
             if field.within_board() == True:
@@ -74,10 +74,10 @@ class Board:
 
     def queen(self, piece_number: int) -> list:
         # Calculates which moves the queen can make
-        directions = [Position([0, 1]), Position([1, 0]),
-                      Position([0, -1]), Position([-1, 0]),
-                      Position([1, 1]), Position([1, -1]),
-                      Position([-1, 1]), Position([-1, -1])]
+        directions = [Position(0, 1), Position(1, 0),
+                      Position(0, -1), Position(-1, 0),
+                      Position(1, 1), Position(1, -1),
+                      Position(-1, 1), Position(-1, -1)]
         for direction in directions:
             for n in range(1, 8):
                 field = self.pieces[piece_number].position + n * direction
@@ -93,8 +93,8 @@ class Board:
 
     def rook(self, piece_number: int) -> list:
         # Calculates which moves a rook can make
-        directions = [Position([0, 1]), Position([1, 0]),
-                      Position([0, -1]), Position([-1, 0])]
+        directions = [Position(0, 1), Position(1, 0),
+                      Position(0, -1), Position(-1, 0)]
         for direction in directions:
             for n in range(1, 8):
                 field = self.pieces[piece_number].position + n * direction
@@ -110,8 +110,8 @@ class Board:
 
     def bishop(self, piece_number: int) -> list:
         # Calculates which moves a bishop can make
-        directions = [Position([1, 1]), Position([-1, 1]), 
-                      Position([1, -1]), Position([-1, -1])]
+        directions = [Position(1, 1), Position(-1, 1), 
+                      Position(1, -1), Position(-1, -1)]
         for direction in directions:
             for n in range(1, 8):
                 field = self.pieces[piece_number].position + n * direction
@@ -127,10 +127,10 @@ class Board:
 
     def knight(self, piece_number: int) -> list:
         # Calculates which moves a knight can make
-        directions = [Position([1, 2]), Position([2, 1]),
-                      Position([1, -2]), Position([-2, 1]),
-                      Position([-1,2]), Position([2,-1]),
-                      Position([-1,-2]), Position([-2,-1])]
+        directions = [Position(1, 2), Position(2, 1),
+                      Position(1, -2), Position(-2, 1),
+                      Position(-1,2), Position(2,-1),
+                      Position(-1,-2), Position(-2,-1)]
         for direction in directions:
             field = self.pieces[piece_number].position + direction
             if field.within_board() == True:
@@ -141,7 +141,7 @@ class Board:
 
     def pawn(self, piece_number: int) -> list:
         # Calculates which moves a pawn can make
-        directions = {0: Position([0,1]), 1: Position([0,-1])}
+        directions = {0: Position(0,1), 1: Position(0,-1)}
         current_position = self.pieces[piece_number].position
         initial_position  = Pawn.init_position[self.pieces[piece_number].color] \
             [self.pieces[piece_number].piece_number]
@@ -156,8 +156,8 @@ class Board:
                 if piece_on_field == -1:
                     self.pieces[piece_number].moves.append(field)
                 else: break
-        capture_directions = {0: [Position([1, 1]), Position([-1, 2])],
-                              1: [Position([1, -1]), Position([-1, -1])]}
+        capture_directions = {0: [Position(1, 1), Position(-1, 2)],
+                              1: [Position(1, -1), Position(-1, -1)]}
         for direction in capture_directions[self.pieces[piece_number].color]:
             field = self.pieces[piece_number].position + direction
             if field.within_board() == True:

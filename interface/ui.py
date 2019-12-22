@@ -32,12 +32,11 @@ class Ui:
             display += " " + str(j+1) + "|"
             for i in range(8):
                 # Find the piece index for position [i, j]
-                position_ij = Position([i, j])
+                position_ij = Position(i, j)
                 k = self.board.find_piece(position_ij)
                 if k != -1:
                     display += " " + \
-                        Ui.piece_type_dict[self.board.pieces[k]
-                                               .type][self.board.pieces[k].color] + " "
+                        Ui.piece_type_dict[self.board.pieces[k].type][self.board.pieces[k].color] + " "
                 else:
                     # Draw an empty cell
                     display += " - "
@@ -99,10 +98,10 @@ class Ui:
         # Converts user input to a position that can be read by board functions.
         x_position = Ui.x_str2int[coordinate[0]]
         y_position = Ui.y_str2int[coordinate[1]]
-        position = Position([x_position, y_position])
+        position = Position(x_position, y_position)
         return position
 
     def position2coordinate(self, position: Position) -> str:
         # Converts user a position to a coordinate that can be displayed in the
         # prompt.
-        return Ui.x_int2str[position.position[0]] + Ui.y_int2str[position.position[1]]
+        return Ui.x_int2str[position.x] + Ui.y_int2str[position.y]

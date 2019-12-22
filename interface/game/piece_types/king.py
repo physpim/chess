@@ -3,7 +3,7 @@ from .piece import Piece, Position
 
 class King(Piece):
     # Class of the king piece
-    init_position = {0: Position([4, 0]), 1: Position([4, 7])}
+    init_position = {0: Position(4, 0), 1: Position(4, 7)}
     init_moves = []
 
     def __init__(self, color: int):
