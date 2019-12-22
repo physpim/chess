@@ -1,34 +1,34 @@
 class Position:
     # Class for position type,
-    def __init__(self, position: list):
-        if len(position) != 2:
-            raise ValueError("position length is not 2")
-        self.position = position
+    def __init__(self, x: int, y: int):
+        if type(x) is not int or type(y) is not int:
+            raise TypeError("x and y should be integers")
+        self.x = x
+        self.y = y
 
     def __add__(self, other):
         # Overloading the add (+) operator
-        x = self.position[0] + other.position[0]
-        y = self.position[1] + other.position[1]
-        return Position([x, y])
+        x = self.x + other.x
+        y = self.y + other.y
+        return Position(x, y)
 
     def __rmul__(self, factor: int):
-        x = factor * self.position[0]
-        y = factor * self.position[1]
-        return Position([x, y])
+        x = factor * self.x
+        y = factor * self.y
+        return Position(x, y)
 
     def __eq__(self, other) -> bool:
         # Overloading the equals (==) operator
-        return self.position[0] == other.position[0] and \
-            self.position[1] == other.position[1]
+        return [self.x, self.y] == [other.x, other.y]
 
     def __str__(self) -> str:
-        return 'Position([' + str(self.position[0]) + ',' + str(self.position[1]) + '])'
-    
+        return 'Position(' + str(self.x) + ',' + str(self.y) + ')'
+
     def __repr__(self):
         return str(self)
 
     def within_board(self) -> bool:
-        if 0 <= self.position[0] <= 7 and 0 <= self.position[1] <= 7:
+        if 0 <= self.x <= 7 and 0 <= self.y <= 7:
             return True
         else:
             return False
