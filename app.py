@@ -4,5 +4,5 @@ from interface import Ui
 ui = Ui()
 
 # Make a turn
-for n in range(4):
+for n in range(8):
     ui.turn()

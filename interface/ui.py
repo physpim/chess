@@ -60,6 +60,8 @@ class Ui:
         self.board.turn_color = int(not self.board.turn_color)
         # Redraw the board
         self.draw()
+        if self.board.check == True:
+            print('Check!')
 
     def select_piece(self) -> int:
         # Asks the user to select a piece to make a move with
