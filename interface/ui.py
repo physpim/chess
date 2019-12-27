@@ -66,8 +66,8 @@ class Ui:
         # Asks the user to select a piece to make a move with
         question = Ui.color_dict[self.board.turn_color] + \
             ", your turn! Please select a piece. \n"
-        piece = False
-        while piece == False or piece.color != self.board.turn_color:
+        piece = Piece(None, None, None, None, None)
+        while piece.color is None or piece.color != self.board.turn_color:
             coordinate = input(question)
             position = self.coordinate2position(coordinate)
             piece = self.board.find_piece(position)

@@ -37,7 +37,7 @@ class Board:
                 break
         return piece_found
 
-    def recalculate(self, selected_piece: int, position: Position):
+    def recalculate(self, selected_piece: Piece, position: Position):
         # Check if move captures other piece
         self.move(selected_piece, position)
         # Recalculate the moves for all pieces
@@ -83,12 +83,7 @@ class Board:
                 # Check if field is occupied by own piece
                 if piece_on_field == False or \
                         piece_on_field.color != self.pieces[piece_number].color:
-                    # Test if moving here would attack the king
-                    new_board = deepcopy(self)
-                    new_board.move(new_board.pieces[piece_number], field)
-                    if not new_board.ischeck(self.pieces[piece_number].color):
-                        # Add the field to possible moves
-                        self.pieces[piece_number].moves.append(field)
+                    self.pieces[piece_number].moves.append(field)
 
     def queen(self, piece_number: int) -> list:
         # Calculates which moves the queen can make
