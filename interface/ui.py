@@ -1,4 +1,4 @@
-from .game import Position, Board
+from .game import Position, Board, Piece
 
 
 class Ui:
@@ -33,10 +33,10 @@ class Ui:
             for i in range(8):
                 # Find the piece index for position [i, j]
                 position_ij = Position(i, j)
-                k = self.board.find_piece(position_ij)
-                if k != -1:
+                piece = self.board.find_piece(position_ij)
+                if piece != False:
                     display += " " + \
-                        Ui.piece_type_dict[self.board.pieces[k].type][self.board.pieces[k].color] + " "
+                        Ui.piece_type_dict[piece.type][piece.color] + " "
                 else:
                     # Draw an empty cell
                     display += " - "
@@ -62,17 +62,17 @@ class Ui:
         if self.board.check == True:
             print('Check!')
 
-    def select_piece(self) -> int:
+    def select_piece(self) -> Piece:
         # Asks the user to select a piece to make a move with
         question = Ui.color_dict[self.board.turn_color] + \
             ", your turn! Please select a piece. \n"
-        index = -1
-        while index == -1 or self.board.pieces[index].color != self.board.turn_color:
+        piece = False
+        while piece == False or piece.color != self.board.turn_color:
             coordinate = input(question)
             position = self.coordinate2position(coordinate)
-            index = self.board.find_piece(position)
+            piece = self.board.find_piece(position)
             question = "No piece of yours at this field, try again! \n"
-        return index
+        return piece
 
     def select_move(self, selected_piece: int) -> Position:
         # Asks the user where to move the selected piece
@@ -80,15 +80,15 @@ class Ui:
             self.moves2text(selected_piece) + "\n"
         coordinate = input(question)
         position = self.coordinate2position(coordinate)
-        while not position in self.board.pieces[selected_piece].moves:
+        while not position in selected_piece.moves:
             question = "Your piece can't move to the selected field, try again! \n"
             coordinate = input(question)
             position = self.coordinate2position(coordinate)
         return position
 
-    def moves2text(self, selected_piece: int) -> str:
+    def moves2text(self, selected_piece: Piece) -> str:
         # Turns a list of positions into a string with coordinates
-        moves = self.board.pieces[selected_piece].moves
+        moves = selected_piece.moves
         text = ""
         for move in moves:
             text += self.position2coordinate(move) + ", "

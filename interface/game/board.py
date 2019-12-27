@@ -1,4 +1,5 @@
 from .piece_types import Bishop, King, Knight, Pawn, Queen, Rook, Position, Piece
+from copy import deepcopy
 
 
 class Board:
@@ -26,30 +27,34 @@ class Board:
         self.check: bool = False
         self.check_mate: bool = False
 
-    def find_piece(self, position: Position) -> int:
+    def find_piece(self, position: Position) -> Piece:
         # Returns the index (k) in the array of pieces for a specified position,
         # returns -1 for an empty field
-        index = -1
-        for i, piece in enumerate(self.pieces):
-            if piece.position == position and \
-                    piece.alive == True:
-                index = i
+        piece_found = False
+        for piece in self.pieces:
+            if piece.position == position and piece.alive == True:
+                piece_found = piece
                 break
-        return index
+        return piece_found
 
     def recalculate(self, selected_piece: int, position: Position):
         # Check if move captures other piece
-        captured_piece = self.find_piece(position)
-        if captured_piece != -1:
-            self.pieces[captured_piece].alive = False
-        # Move selected_piece to position
-        self.pieces[selected_piece].position = position
+        self.move(selected_piece, position)
         # Recalculate the moves for all pieces
         for piece_number, _ in enumerate(self.pieces):
             self.pieces[piece_number].moves = []
             self.piece_moves(piece_number)
         # Detect check
-        self.check = self.ischeck(int(not self.turn_color))     
+        self.check = self.ischeck(int(not self.turn_color))
+
+    def move(self, selected_piece: Piece, position: Position):
+        # Check if move captures other piece
+        captured_piece = self.find_piece(position)
+        if captured_piece != False:
+            captured_piece.alive = False
+            captured_piece.moves = []
+        # Move selected_piece to position
+        selected_piece.position = position
 
     def piece_moves(self, piece_number: int):
         # Ensures the right method is called for the specific piece type
@@ -60,17 +65,30 @@ class Board:
 
     def king(self, piece_number: int) -> list:
         # Calculates which moves the king can make
+
+        # Directions a king can move to
         directions = [Position(0, 1), Position(1, 0),
                       Position(0, -1), Position(-1, 0),
-                      Position(1, 1), Position(1, -1),
+                      Position(1, 1), Position(-1, -1),
                       Position(-1, 1), Position(-1, 1)]
+
+        # Loop over directions
         for direction in directions:
+            # Determine the field for move checking
             field = self.pieces[piece_number].position + direction
+            # Check if field is within the board
             if field.within_board() == True:
+                # Find if there is a piece on field
                 piece_on_field = self.find_piece(field)
-                if piece_on_field == -1 or \
-                        self.pieces[piece_on_field].color != self.pieces[piece_number].color:
-                    self.pieces[piece_number].moves.append(field)
+                # Check if field is occupied by own piece
+                if piece_on_field == False or \
+                        piece_on_field.color != self.pieces[piece_number].color:
+                    # Test if moving here would attack the king
+                    new_board = deepcopy(self)
+                    new_board.move(new_board.pieces[piece_number], field)
+                    if not new_board.ischeck(self.pieces[piece_number].color):
+                        # Add the field to possible moves
+                        self.pieces[piece_number].moves.append(field)
 
     def queen(self, piece_number: int) -> list:
         # Calculates which moves the queen can make
@@ -83,9 +101,9 @@ class Board:
                 field = self.pieces[piece_number].position + n * direction
                 if field.within_board() == True:
                     piece_on_field = self.find_piece(field)
-                    if piece_on_field == -1:
+                    if piece_on_field == False:
                         self.pieces[piece_number].moves.append(field)
-                    elif self.pieces[piece_on_field].color != self.pieces[piece_number].color:
+                    elif piece_on_field.color != self.pieces[piece_number].color:
                         self.pieces[piece_number].moves.append(field)
                         break
                     else:
@@ -100,9 +118,9 @@ class Board:
                 field = self.pieces[piece_number].position + n * direction
                 if field.within_board() == True:
                     piece_on_field = self.find_piece(field)
-                    if piece_on_field == -1:
+                    if piece_on_field == False:
                         self.pieces[piece_number].moves.append(field)
-                    elif self.pieces[piece_on_field].color != self.pieces[piece_number].color:
+                    elif piece_on_field.color != self.pieces[piece_number].color:
                         self.pieces[piece_number].moves.append(field)
                         break
                     else:
@@ -110,16 +128,16 @@ class Board:
 
     def bishop(self, piece_number: int) -> list:
         # Calculates which moves a bishop can make
-        directions = [Position(1, 1), Position(-1, 1), 
+        directions = [Position(1, 1), Position(-1, 1),
                       Position(1, -1), Position(-1, -1)]
         for direction in directions:
             for n in range(1, 8):
                 field = self.pieces[piece_number].position + n * direction
                 if field.within_board() == True:
                     piece_on_field = self.find_piece(field)
-                    if piece_on_field == -1:
+                    if piece_on_field == False:
                         self.pieces[piece_number].moves.append(field)
-                    elif self.pieces[piece_on_field].color != self.pieces[piece_number].color:
+                    elif piece_on_field.color != self.pieces[piece_number].color:
                         self.pieces[piece_number].moves.append(field)
                         break
                     else:
@@ -129,52 +147,58 @@ class Board:
         # Calculates which moves a knight can make
         directions = [Position(1, 2), Position(2, 1),
                       Position(1, -2), Position(-2, 1),
-                      Position(-1,2), Position(2,-1),
-                      Position(-1,-2), Position(-2,-1)]
+                      Position(-1, 2), Position(2, -1),
+                      Position(-1, -2), Position(-2, -1)]
         for direction in directions:
             field = self.pieces[piece_number].position + direction
             if field.within_board() == True:
                 piece_on_field = self.find_piece(field)
-                if piece_on_field == -1 or \
-                        self.pieces[piece_on_field].color != self.pieces[piece_number].color:
+                if piece_on_field == False or \
+                        piece_on_field.color != self.pieces[piece_number].color:
                     self.pieces[piece_number].moves.append(field)
 
     def pawn(self, piece_number: int) -> list:
         # Calculates which moves a pawn can make
-        directions = {0: Position(0,1), 1: Position(0,-1)}
+        directions = {0: Position(0, 1), 1: Position(0, -1)}
         current_position = self.pieces[piece_number].position
-        initial_position  = Pawn.init_position[self.pieces[piece_number].color] \
-            [self.pieces[piece_number].piece_number]
-        if  current_position == initial_position:
+        initial_position = Pawn.init_position[self.pieces[piece_number]
+                                              .color][self.pieces[piece_number].piece_number]
+        if current_position == initial_position:
             n_moves = 2
-        else: n_moves = 1
+        else:
+            n_moves = 1
         for n in range(1, n_moves+1):
             field = self.pieces[piece_number].position + \
                 n * directions[self.pieces[piece_number].color]
             if field.within_board() == True:
                 piece_on_field = self.find_piece(field)
-                if piece_on_field == -1:
+                if piece_on_field == False:
                     self.pieces[piece_number].moves.append(field)
-                else: break
+                else:
+                    break
         capture_directions = {0: [Position(1, 1), Position(-1, 2)],
                               1: [Position(1, -1), Position(-1, -1)]}
         for direction in capture_directions[self.pieces[piece_number].color]:
             field = self.pieces[piece_number].position + direction
             if field.within_board() == True:
                 piece_on_field = self.find_piece(field)
-                if piece_on_field != -1 and \
-                        self.pieces[piece_on_field].color != \
+                if piece_on_field != False and \
+                        piece_on_field.color != \
                         self.pieces[piece_number].color:
                     self.pieces[piece_number].moves.append(field)
 
     def ischeck(self, color: int) -> bool:
-        # Detects if the current board is check
+        # Find the king of the right color
         for n, piece in enumerate(self.pieces):
             if piece.type == 0 and piece.color == color:
                 break
         king_position = self.pieces[n].position
+
+        # See if other pieces attack the king
         check = False
         for piece in self.pieces:
-            if king_position in piece.moves:
-                check = True
+            if piece.color != color:
+                if king_position in piece.moves:
+                    check = True
+                    break
         return check
