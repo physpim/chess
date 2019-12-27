@@ -10,4 +10,5 @@ class Queen(Piece):
         super().__init__(color,
                          Queen.init_position[color],
                          Queen.init_moves,
-                         piece_type=1, piece_number=0)
+                         piece_type=1, 
+                         piece_number=0)
