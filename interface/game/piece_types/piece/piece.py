@@ -16,8 +16,8 @@ class Piece:
         self.alive = True
 
     def __eq__(self, other):
-        color_bool = self.color == other.color
-        position_bool = self.position == other.position
-        type_bool = self.type == other.type
-        piece_number_bool = self.piece_number == other.piece_number
-        return color_bool and position_bool and type_bool and piece_number_bool
+        color = self.color == other.color
+        position = self.position == other.position
+        type_ = self.type == other.type
+        piece_number = self.piece_number == other.piece_number
+        return color and position and type_ and piece_number
