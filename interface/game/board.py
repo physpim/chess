@@ -30,7 +30,7 @@ class Board:
     def find_piece(self, position: Position) -> Piece:
         # Returns the index (k) in the array of pieces for a specified position,
         # returns -1 for an empty field
-        piece_found = False
+        piece_found = Piece(None, None, None, None, None)
         for piece in self.pieces:
             if piece.position == position and piece.alive == True:
                 piece_found = piece
@@ -38,40 +38,50 @@ class Board:
         return piece_found
 
     def recalculate(self, selected_piece: Piece, position: Position):
-        # Check if move captures other piece
+        type_funcs = {0: self.king, 1: self.queen, 2: self.rook,
+                      3: self.bishop, 4: self.knight, 5: self.pawn}
+        # Move the selected piece and capture if needed
         self.move(selected_piece, position)
         # Recalculate the moves for all pieces
         for piece in self.pieces:
             piece.moves = []
-            self.piece_moves(piece)
+            func = type_funcs[piece.type]
+            func(piece)
         # Detect check
         self.check = self.ischeck(int(not self.turn_color))
+
+    def delete_self_check(self):
+        # Delete moves that cause self check
+        for piece in self.pieces:
+            if piece.color != self.turn_color:
+                remove_fields = []
+                for field in piece.moves:
+                    copy_board = deepcopy(self)
+                    for copy_piece in copy_board.pieces:
+                        if copy_piece == piece:
+                            break
+                    copy_board.recalculate(copy_piece, field)
+                    if copy_board.ischeck(copy_piece.color):
+                        remove_fields.append(field)
+                for elem in remove_fields:
+                    piece.moves.remove(elem)
 
     def move(self, selected_piece: Piece, position: Position):
         # Check if move captures other piece
         captured_piece = self.find_piece(position)
-        if captured_piece != False:
+        if captured_piece.color != None:
             captured_piece.alive = False
             captured_piece.moves = []
         # Move selected_piece to position
         selected_piece.position = position
 
-    def piece_moves(self, piece: Piece):
-        # Ensures the right method is called for the specific piece type
-        type_dict = {0: self.king, 1: self.queen, 2: self.rook,
-                     3: self.bishop, 4: self.knight, 5: self.pawn}
-        func = type_dict[piece.type]
-        return func(piece)
-
     def king(self, piece: Piece) -> list:
         # Calculates which moves the king can make
-
         # Directions a king can move to
         directions = [Position(0, 1), Position(1, 0),
                       Position(0, -1), Position(-1, 0),
                       Position(1, 1), Position(-1, -1),
                       Position(-1, 1), Position(-1, 1)]
-
         # Loop over directions
         for direction in directions:
             # Determine the field for move checking
@@ -81,7 +91,7 @@ class Board:
                 # Find if there is a piece on field
                 piece_on_field = self.find_piece(field)
                 # Check if field is occupied by own piece
-                if piece_on_field == False or piece_on_field.color != piece.color:
+                if piece_on_field.color == None or piece_on_field.color != piece.color:
                     piece.moves.append(field)
 
     def queen(self, piece: Piece) -> list:
@@ -95,7 +105,7 @@ class Board:
                 field = piece.position + n * direction
                 if field.within_board() == True:
                     piece_on_field = self.find_piece(field)
-                    if piece_on_field == False:
+                    if piece_on_field.color == None:
                         piece.moves.append(field)
                     elif piece_on_field.color != piece.color:
                         piece.moves.append(field)
@@ -112,7 +122,7 @@ class Board:
                 field = piece.position + n * direction
                 if field.within_board() == True:
                     piece_on_field = self.find_piece(field)
-                    if piece_on_field == False:
+                    if piece_on_field.color == None:
                         piece.moves.append(field)
                     elif piece_on_field.color != piece.color:
                         piece.moves.append(field)
@@ -129,7 +139,7 @@ class Board:
                 field = piece.position + n * direction
                 if field.within_board() == True:
                     piece_on_field = self.find_piece(field)
-                    if piece_on_field == False:
+                    if piece_on_field.color == None:
                         piece.moves.append(field)
                     elif piece_on_field.color != piece.color:
                         piece.moves.append(field)
@@ -147,7 +157,7 @@ class Board:
             field = piece.position + direction
             if field.within_board() == True:
                 piece_on_field = self.find_piece(field)
-                if piece_on_field == False or \
+                if piece_on_field.color == None or \
                         piece_on_field.color != piece.color:
                     piece.moves.append(field)
 
@@ -161,29 +171,28 @@ class Board:
         else:
             n_moves = 1
         for n in range(1, n_moves+1):
-            field = piece.position + \
-                n * directions[piece.color]
+            field = piece.position + n * directions[piece.color]
             if field.within_board() == True:
                 piece_on_field = self.find_piece(field)
-                if piece_on_field == False:
+                if piece_on_field.color == None:
                     piece.moves.append(field)
                 else:
                     break
-        capture_directions = {0: [Position(1, 1), Position(-1, 2)],
+        capture_directions = {0: [Position(1, 1), Position(-1, 1)],
                               1: [Position(1, -1), Position(-1, -1)]}
         for direction in capture_directions[piece.color]:
             field = piece.position + direction
             if field.within_board() == True:
                 piece_on_field = self.find_piece(field)
-                if piece_on_field != False and piece_on_field.color != piece.color:
+                if piece_on_field.color != None and piece_on_field.color != piece.color:
                     piece.moves.append(field)
 
     def ischeck(self, color: int) -> bool:
         # Find the king of the right color
-        for n, piece in enumerate(self.pieces):
+        for piece in self.pieces:
             if piece.type == 0 and piece.color == color:
                 break
-        king_position = self.pieces[n].position
+        king_position = piece.position
         # See if other pieces attack the king
         check = False
         for piece in self.pieces:

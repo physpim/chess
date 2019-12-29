@@ -34,7 +34,7 @@ class Ui:
                 # Find the piece index for position [i, j]
                 position_ij = Position(i, j)
                 piece = self.board.find_piece(position_ij)
-                if piece != False:
+                if piece.color != None:
                     display += " " + \
                         Ui.piece_type_dict[piece.type][piece.color] + " "
                 else:
@@ -54,6 +54,7 @@ class Ui:
         position = self.select_move(selected_piece)
         # Recalculate board
         self.board.recalculate(selected_piece, position)
+        self.board.delete_self_check()
         # Update dynamics attributes
         self.board.turn_counter += 1
         self.board.turn_color = int(not self.board.turn_color)
@@ -88,18 +89,16 @@ class Ui:
 
     def moves2text(self, selected_piece: Piece) -> str:
         # Turns a list of positions into a string with coordinates
-        moves = selected_piece.moves
         text = ""
-        for move in moves:
+        for move in selected_piece.moves:
             text += self.position2coordinate(move) + ", "
         return text
 
     def coordinate2position(self, coordinate: str) -> Position:
         # Converts user input to a position that can be read by board functions.
-        x_position = Ui.x_str2int[coordinate[0]]
-        y_position = Ui.y_str2int[coordinate[1]]
-        position = Position(x_position, y_position)
-        return position
+        x = Ui.x_str2int[coordinate[0]]
+        y = Ui.y_str2int[coordinate[1]]
+        return Position(x, y)
 
     def position2coordinate(self, position: Position) -> str:
         # Converts user a position to a coordinate that can be displayed in the
