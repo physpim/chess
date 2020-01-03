@@ -203,7 +203,7 @@ class Board:
         return check
 
     def ischeckmate(self, color: int) -> bool:
-        """Returns if color is check mate"""
+        """Returns if color is check mate """
         # Bug, always returns true...
         checkmate = True
         for piece in self.pieces:
