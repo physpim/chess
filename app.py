@@ -11,5 +11,5 @@ from interface import Ui
 ui = Ui()
 
 # Make a turn
-for n in range(8):
+while ui.board.check_mate == False:
     ui.turn()

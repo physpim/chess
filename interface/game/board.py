@@ -201,3 +201,12 @@ class Board:
                     check = True
                     break
         return check
+
+    def ischeckmate(self, color: int) -> bool:
+        """Returns if color is check mate"""
+        # Bug, always returns true...
+        checkmate = True
+        for piece in self.pieces:
+            if piece.color == color and piece.moves != []:
+                checkmate == False
+        return checkmate

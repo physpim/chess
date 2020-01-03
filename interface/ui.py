@@ -61,7 +61,12 @@ class Ui:
         # Redraw the board
         self.draw()
         if self.board.check == True:
-            print('Check!')
+            self.board.check_mate = \
+                self.board.ischeckmate(self.board.turn_color)
+            if self.board.check_mate == True:
+                print('Check mate! The game is over')
+                # end game
+            else: print('Check!')
 
     def select_piece(self) -> Piece:
         # Asks the user to select a piece to make a move with
