@@ -2,7 +2,7 @@ from .position import Position
 
 
 class Piece:
-    # Describes a general chess piece
+    """Describes the general attributes of a piece"""
     __color_dict__ = {0: "white", 1: "black"}
     __piece_type_dict__ = {0: "king", 1: "queen", 2: "rook",
                            3: "bishop", 4: "knight", 5: "pawn"}

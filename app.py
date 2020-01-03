@@ -1,3 +1,10 @@
+"""Docstring
+
+Explanaition 
+"""
+__version__ = "0.1"
+__author__ = "Pim Venderbosch"
+
 from interface import Ui
 
 # Initializing the game
