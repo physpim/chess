@@ -28,16 +28,20 @@ class Board:
         self.check_mate: bool = False
 
     def find_piece(self, position: Position) -> Piece:
+        """Finds piece on position and returns the piece
+        
+        nb: When no piece is found at position, a piece with all attributes set to None is returned.
+        """
         # Returns the index (k) in the array of pieces for a specified position,
         # returns -1 for an empty field
-        piece_found = Piece(None, None, None, None, None)
         for piece in self.pieces:
             if piece.position == position and piece.alive == True:
-                piece_found = piece
-                break
-        return piece_found
+                return piece
+        else:
+            return Piece(None, None, None, None, None)
 
     def recalculate(self, selected_piece: Piece, position: Position):
+        """Recalculates board when selected_piece moves to Position"""
         type_funcs = {0: self.king, 1: self.queen, 2: self.rook,
                       3: self.bishop, 4: self.knight, 5: self.pawn}
         # Move the selected piece and capture if needed
@@ -51,7 +55,8 @@ class Board:
         self.check = self.ischeck(int(not self.turn_color))
 
     def delete_self_check(self):
-        # Delete moves that cause self check
+        """Delete moves that cause self"""
+        # Bug: doesn't skip capturing attacking piece
         for piece in self.pieces:
             if piece.color != self.turn_color:
                 remove_fields = []
@@ -67,35 +72,29 @@ class Board:
                     piece.moves.remove(elem)
 
     def move(self, selected_piece: Piece, position: Position):
-        # Check if move captures other piece
+        """Moves selected_piece to position and captures if needed"""
         captured_piece = self.find_piece(position)
         if captured_piece.color != None:
             captured_piece.alive = False
             captured_piece.moves = []
-        # Move selected_piece to position
         selected_piece.position = position
 
     def king(self, piece: Piece) -> list:
-        # Calculates which moves the king can make
-        # Directions a king can move to
+        """Updates the king's piece.moves"""
         directions = [Position(0, 1), Position(1, 0),
                       Position(0, -1), Position(-1, 0),
                       Position(1, 1), Position(-1, -1),
                       Position(-1, 1), Position(-1, 1)]
-        # Loop over directions
         for direction in directions:
-            # Determine the field for move checking
             field = piece.position + direction
-            # Check if field is within the board
             if field.within_board() == True:
-                # Find if there is a piece on field
                 piece_on_field = self.find_piece(field)
-                # Check if field is occupied by own piece
-                if piece_on_field.color == None or piece_on_field.color != piece.color:
+                if piece_on_field.color == None or \
+                   piece_on_field.color != piece.color:
                     piece.moves.append(field)
 
     def queen(self, piece: Piece) -> list:
-        # Calculates which moves the queen can make
+        """Updates the queen's piece.moves"""
         directions = [Position(0, 1), Position(1, 0),
                       Position(0, -1), Position(-1, 0),
                       Position(1, 1), Position(1, -1),
@@ -114,7 +113,7 @@ class Board:
                         break
 
     def rook(self, piece: Piece) -> list:
-        # Calculates which moves a rook can make
+        """Updates the rooks's piece.moves"""
         directions = [Position(0, 1), Position(1, 0),
                       Position(0, -1), Position(-1, 0)]
         for direction in directions:
@@ -131,7 +130,7 @@ class Board:
                         break
 
     def bishop(self, piece: Piece) -> list:
-        # Calculates which moves a bishop can make
+        """Updates the bishop's piece.moves"""
         directions = [Position(1, 1), Position(-1, 1),
                       Position(1, -1), Position(-1, -1)]
         for direction in directions:
@@ -148,7 +147,7 @@ class Board:
                         break
 
     def knight(self, piece: Piece) -> list:
-        # Calculates which moves a knight can make
+        """Updates the knight's piece.moves"""
         directions = [Position(1, 2), Position(2, 1),
                       Position(1, -2), Position(-2, 1),
                       Position(-1, 2), Position(2, -1),
@@ -162,7 +161,7 @@ class Board:
                     piece.moves.append(field)
 
     def pawn(self, piece: Piece) -> list:
-        # Calculates which moves a pawn can make
+        """Updates the pawn's piece.moves"""
         directions = {0: Position(0, 1), 1: Position(0, -1)}
         current_position = piece.position
         initial_position = Pawn.init_position[piece.color][piece.piece_number]
@@ -188,6 +187,7 @@ class Board:
                     piece.moves.append(field)
 
     def ischeck(self, color: int) -> bool:
+        """Returns if color is check"""
         # Find the king of the right color
         for piece in self.pieces:
             if piece.type == 0 and piece.color == color:
@@ -203,10 +203,9 @@ class Board:
         return check
 
     def ischeckmate(self, color: int) -> bool:
-        """Returns if color is check mate """
-        # Bug, always returns true...
-        checkmate = True
+        """Returns if color is check mate"""
         for piece in self.pieces:
             if piece.color == color and piece.moves != []:
-                checkmate == False
-        return checkmate
+                return False
+        else:
+            return True
