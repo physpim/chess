@@ -84,7 +84,7 @@ class Board:
         directions = [Position(0, 1), Position(1, 0),
                       Position(0, -1), Position(-1, 0),
                       Position(1, 1), Position(-1, -1),
-                      Position(-1, 1), Position(-1, 1)]
+                      Position(1, -1), Position(-1, 1)]
         for direction in directions:
             field = piece.position + direction
             if field.within_board() == True:
@@ -97,8 +97,8 @@ class Board:
         """Updates the queen's piece.moves"""
         directions = [Position(0, 1), Position(1, 0),
                       Position(0, -1), Position(-1, 0),
-                      Position(1, 1), Position(1, -1),
-                      Position(-1, 1), Position(-1, -1)]
+                      Position(1, 1), Position(-1, -1),
+                      Position(1, -1), Position(-1, 1)]
         for direction in directions:
             for n in range(1, 8):
                 field = piece.position + n * direction
@@ -131,8 +131,8 @@ class Board:
 
     def bishop(self, piece: Piece) -> list:
         """Updates the bishop's piece.moves"""
-        directions = [Position(1, 1), Position(-1, 1),
-                      Position(1, -1), Position(-1, -1)]
+        directions = [Position(1, 1), Position(-1, -1),
+                      Position(1, -1), Position(-1, 1)]
         for direction in directions:
             for n in range(1, 8):
                 field = piece.position + n * direction
