@@ -194,13 +194,12 @@ class Board:
                 break
         king_position = piece.position
         # See if other pieces attack the king
-        check = False
         for piece in self.pieces:
             if piece.color != color:
                 if king_position in piece.moves:
-                    check = True
-                    break
-        return check
+                    return True
+        else:
+            return False
 
     def ischeckmate(self, color: int) -> bool:
         """Returns if color is check mate"""
