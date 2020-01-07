@@ -29,11 +29,9 @@ class Board:
 
     def find_piece(self, position: Position) -> Piece:
         """Finds piece on position and returns the piece
-        
+
         nb: When no piece is found at position, a piece with all attributes set to None is returned.
         """
-        # Returns the index (k) in the array of pieces for a specified position,
-        # returns -1 for an empty field
         for piece in self.pieces:
             if piece.position == position and piece.alive == True:
                 return piece
@@ -55,16 +53,14 @@ class Board:
         self.check = self.ischeck(int(not self.turn_color))
 
     def delete_self_check(self):
-        """Delete moves that cause self"""
-        # Bug: doesn't skip capturing attacking piece
+        """Delete moves that cause self check"""
         for piece in self.pieces:
             if piece.color != self.turn_color:
                 remove_fields = []
                 for field in piece.moves:
                     copy_board = deepcopy(self)
-                    for copy_piece in copy_board.pieces:
-                        if copy_piece == piece:
-                            break
+                    index = copy_board.pieces.index(piece)
+                    copy_piece = copy_board.pieces[index]
                     copy_board.recalculate(copy_piece, field)
                     if copy_board.ischeck(copy_piece.color):
                         remove_fields.append(field)
@@ -195,9 +191,10 @@ class Board:
         king_position = piece.position
         # See if other pieces attack the king
         for piece in self.pieces:
-            if piece.color != color:
-                if king_position in piece.moves:
-                    return True
+            if piece.color != color and \
+               king_position in piece.moves and \
+               piece.alive == True:
+                return True
         else:
             return False
 
