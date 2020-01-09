@@ -2,7 +2,10 @@ from .game import Position, Board, Piece
 
 
 class Ui:
-    # Command line user interface. Manages all the interaction with the user.
+    """Command line user interface
+
+    Manages all the interaction with the user. 
+    """
     color_dict = {0: "White", 1: "Black"}
     piece_type_dict = {0: "\u2654\u265a",
                        1: "\u2655\u265b",
@@ -24,7 +27,7 @@ class Ui:
         self.draw()
 
     def draw(self):
-        # Draws the board configuration in the terminal
+        """Draws the board configuration in the terminal"""
         display = "     a  b  c  d  e  f  g  h      \n" + \
                   "________________________________ \n "
         # Loop over all x and y indices
@@ -48,28 +51,15 @@ class Ui:
         print(display)
 
     def turn(self):
-        # Select piece
-        selected_piece = self.select_piece()
-        # Show options and select where to move to
-        position = self.select_move(selected_piece)
-        # Recalculate board
-        self.board.recalculate(selected_piece, position)
-        self.board.delete_self_check()
-        # Update dynamics attributes
-        self.board.turn_counter += 1
-        self.board.turn_color = int(not self.board.turn_color)
-        # Redraw the board
-        self.draw()
-        if self.board.check == True:
-            self.board.check_mate = \
-                self.board.ischeckmate(self.board.turn_color)
-            if self.board.check_mate == True:
-                print('Check mate! The game is over')
-                # end game
-            else: print('Check!')
+        """"Performs a turn within ui"""
+        self.board.turn(self.select_piece,
+                        self.select_move,
+                        self.draw,
+                        self.check,
+                        self.check_mate)
 
     def select_piece(self) -> Piece:
-        # Asks the user to select a piece to make a move with
+        """Asks the user to select a piece to make a move with"""
         question = Ui.color_dict[self.board.turn_color] + \
             ", your turn! Please select a piece. \n"
         piece = Piece(None, None, None, None, None)
@@ -81,7 +71,7 @@ class Ui:
         return piece
 
     def select_move(self, selected_piece: int) -> Position:
-        # Asks the user where to move the selected piece
+        """Asks the user where to move the selected piece"""
         question = "The selected piece can move to " + \
             self.moves2text(selected_piece) + "\n"
         coordinate = input(question)
@@ -93,19 +83,26 @@ class Ui:
         return position
 
     def moves2text(self, selected_piece: Piece) -> str:
-        # Turns a list of positions into a string with coordinates
+        """Turns a list of positions into a string with coordinates"""
         text = ""
         for move in selected_piece.moves:
             text += self.position2coordinate(move) + ", "
         return text
 
     def coordinate2position(self, coordinate: str) -> Position:
-        # Converts user input to a position that can be read by board functions.
+        """Converts user input to a board position"""
         x = Ui.x_str2int[coordinate[0]]
         y = Ui.y_str2int[coordinate[1]]
         return Position(x, y)
 
     def position2coordinate(self, position: Position) -> str:
-        # Converts user a position to a coordinate that can be displayed in the
-        # prompt.
+        """Converts user a position to a  ui coordinate"""
         return Ui.x_int2str[position.x] + Ui.y_int2str[position.y]
+
+    def check(self):
+        """Function that notifies players when check"""
+        print('Check!')
+
+    def check_mate(self):
+        """Function that notifies players when check mate"""
+        print('Check mate! The game is over')

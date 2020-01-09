@@ -3,9 +3,7 @@ from copy import deepcopy
 
 
 class Board:
-    # Board class consists of all the chess pieces, also defines the moving
-    # rules.
-
+    """Class that defines the board and incorporates all rules"""
     def __init__(self):
         # Initialize board by creating all pieces in a chess game
         self.pieces = []
@@ -26,6 +24,22 @@ class Board:
         self.turn_color = 0
         self.check: bool = False
         self.check_mate: bool = False
+
+    def turn(self, select_piece, select_move, draw, check, check_mate):
+        """Performs a turn and executes all interface functions"""
+        selected_piece = select_piece()
+        position = select_move(selected_piece)
+        self.recalculate(selected_piece, position)
+        self.delete_self_check()
+        self.turn_counter += 1
+        self.turn_color = int(not self.turn_color)
+        draw()
+        if self.check == True:
+            self.check_mate = self.ischeckmate(self.turn_color)
+            if self.check_mate == True:
+                check_mate()
+            else: check()
+
 
     def find_piece(self, position: Position) -> Piece:
         """Finds piece on position and returns the piece
