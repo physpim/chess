@@ -7,12 +7,12 @@ from functools import partial
 class Gui():
     """Grafical user interface for playing chess"""
     color_dict = {0: '#FFFFFF', 1: '#b0b0b0'}
-    piece_type_dict = {0: {1: '\u2654', 0: '\u265a'},
-                       1: {1: '\u2655', 0: '\u265b'},
-                       2: {1: '\u2656', 0: '\u265c'},
-                       3: {1: '\u2657', 0: '\u265d'},
-                       4: {1: '\u2658', 0: '\u265e'},
-                       5: {1: '\u2659', 0: '\u265f'}}
+    piece_type_dict = {0: {0: '\u2654', 1: '\u265a'},
+                       1: {0: '\u2655', 1: '\u265b'},
+                       2: {0: '\u2656', 1: '\u265c'},
+                       3: {0: '\u2657', 1: '\u265d'},
+                       4: {0: '\u2658', 1: '\u265e'},
+                       5: {0: '\u2659', 1: '\u265f'}}
 
     def __init__(self):
         # Init board
@@ -59,27 +59,39 @@ class Gui():
         for x, rows in enumerate(self.buttons):
             for y, button in enumerate(rows):
                 piece = self.board.find_piece(Position(x, y))
-                if piece.color != color and \
+                if piece.color == color and \
                    piece.moves != [] and \
                    piece.moves != None:
-                    print(piece.position)
-                    print(piece.moves)
-                    func = partial(self.show_moves, piece.moves)
+                    func = partial(self.show_moves, piece)
                     button.configure(
                         command=func
                     )
 
-    def show_moves(self, moves: list):
+    def show_moves(self, piece: Piece):
         """Marks the fields where the selected piece can move to"""
         self.reset_buttons()
-        for move in moves:
+        for move in piece.moves:
             self.buttons[move.x][move.y].configure(
                 background='#f2ff00',
-                command=partial(print, 'this is a movable field')
+                command=partial(self.select_move, piece, move)
             )
 
-    def select_move(self):
-        pass
+    def select_move(self, piece, position):
+        """Runs when player selects where to move to"""
+        self.reset_buttons()
+        self.board.recalculate(piece, position)
+        self.board.delete_self_check()
+        self.board.turn_counter += 1
+        self.board.turn_color = int(not self.board.turn_color)
+        self.draw()
+        if self.board.check == True:
+            self.board.check_mate = \
+                self.board.ischeckmate(self.board.turn_color)
+            if self.board.check_mate == True:
+                self.check_mate()
+            else:
+                self.check()
+        self.select_piece()
 
     def draw(self):
         """Draws pieces on the board"""
