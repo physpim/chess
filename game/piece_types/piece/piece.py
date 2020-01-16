@@ -14,6 +14,7 @@ class Piece:
         self.type = piece_type
         self.piece_number = piece_number
         self.alive = True
+        self.moved = 0
 
     def __eq__(self, other):
         color = self.color == other.color

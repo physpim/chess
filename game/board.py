@@ -87,8 +87,14 @@ class Board:
             captured_piece.alive = False
             captured_piece.moves = []
         selected_piece.position = position
+        selected_piece.moved += 1
+        if selected_piece.type == 5:
+            for captured_piece in selected_piece.en_passant:
+                captured_piece.alive = False
+                captured_piece.moves = []
+            selected_piece.en_passant = []
 
-    def king(self, piece: Piece) -> list:
+    def king(self, piece: Piece):
         """Updates the king's piece.moves"""
         directions = [Position(0, 1), Position(1, 0),
                       Position(0, -1), Position(-1, 0),
@@ -102,7 +108,7 @@ class Board:
                    piece_on_field.color != piece.color:
                     piece.moves.append(field)
 
-    def queen(self, piece: Piece) -> list:
+    def queen(self, piece: Piece):
         """Updates the queen's piece.moves"""
         directions = [Position(0, 1), Position(1, 0),
                       Position(0, -1), Position(-1, 0),
@@ -121,7 +127,7 @@ class Board:
                     else:
                         break
 
-    def rook(self, piece: Piece) -> list:
+    def rook(self, piece: Piece):
         """Updates the rooks's piece.moves"""
         directions = [Position(0, 1), Position(1, 0),
                       Position(0, -1), Position(-1, 0)]
@@ -138,7 +144,7 @@ class Board:
                     else:
                         break
 
-    def bishop(self, piece: Piece) -> list:
+    def bishop(self, piece: Piece):
         """Updates the bishop's piece.moves"""
         directions = [Position(1, 1), Position(-1, -1),
                       Position(1, -1), Position(-1, 1)]
@@ -155,7 +161,7 @@ class Board:
                     else:
                         break
 
-    def knight(self, piece: Piece) -> list:
+    def knight(self, piece: Piece):
         """Updates the knight's piece.moves"""
         directions = [Position(1, 2), Position(2, 1),
                       Position(1, -2), Position(-2, 1),
@@ -169,8 +175,9 @@ class Board:
                         piece_on_field.color != piece.color:
                     piece.moves.append(field)
 
-    def pawn(self, piece: Piece) -> list:
+    def pawn(self, piece: Piece):
         """Updates the pawn's piece.moves"""
+        # Forward move(s)
         directions = {0: Position(0, 1), 1: Position(0, -1)}
         current_position = piece.position
         initial_position = Pawn.init_position[piece.color][piece.piece_number]
@@ -178,6 +185,7 @@ class Board:
             n_moves = 2
         else:
             n_moves = 1
+
         for n in range(1, n_moves+1):
             field = piece.position + n * directions[piece.color]
             if field.within_board() == True:
@@ -186,14 +194,29 @@ class Board:
                     piece.moves.append(field)
                 else:
                     break
+
+        # Diagonal (capturing) moves
         capture_directions = {0: [Position(1, 1), Position(-1, 1)],
                               1: [Position(1, -1), Position(-1, -1)]}
         for direction in capture_directions[piece.color]:
             field = piece.position + direction
             if field.within_board() == True:
                 piece_on_field = self.find_piece(field)
-                if piece_on_field.color != None and piece_on_field.color != piece.color:
+                if piece_on_field.color != None and \
+                   piece_on_field.color != piece.color:
                     piece.moves.append(field)
+
+        # En passant moves
+        row_ep = {0: 4, 1: 3}
+        if current_position.y == row_ep[piece.color]:
+            neighbours = [current_position + Position(1, 0),
+                          current_position + Position(-1, 0)]
+            piece.en_passant = []
+            for position in neighbours:
+                piece_on_field = self.find_piece(position)
+                if piece_on_field.type == 5 and piece_on_field.moved == 1:
+                    piece.moves.append(position + directions[piece.color])
+                    piece.en_passant.append(piece_on_field)
 
     def ischeck(self, color: int) -> bool:
         """Returns if color is check"""

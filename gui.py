@@ -6,7 +6,7 @@ from functools import partial
 
 class Gui():
     """Grafical user interface for playing chess"""
-    color_dict = {0: '#FFFFFF', 1: '#b0b0b0'}
+    color_dict = {0: '#b0b0b0', 1: '#ffffff'}
     piece_type_dict = {0: {0: '\u2654', 1: '\u265a'},
                        1: {0: '\u2655', 1: '\u265b'},
                        2: {0: '\u2656', 1: '\u265c'},
@@ -38,7 +38,7 @@ class Gui():
                          background=Gui.color_dict[field_color])
             )
             self.fields[x][y].propagate(False)
-            self.fields[x][y].grid(column=x, row=y)
+            self.fields[x][y].grid(column=x, row=8-y)
             self.buttons[x].append(
                 tk.Button(self.fields[x][y],
                           background=Gui.color_dict[field_color],
