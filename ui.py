@@ -1,4 +1,4 @@
-from .game import Position, Board, Piece
+from game import Position, Board, Piece
 
 
 class Ui:
@@ -52,8 +52,10 @@ class Ui:
 
     def turn(self):
         """"Performs a turn within ui"""
-        self.board.turn(self.select_piece,
-                        self.select_move,
+        selected_piece = self.select_piece()
+        position = self.select_move(selected_piece)
+        self.board.turn(selected_piece,
+                        position,
                         self.draw,
                         self.check,
                         self.check_mate)
@@ -106,3 +108,11 @@ class Ui:
     def check_mate(self):
         """Function that notifies players when check mate"""
         print('Check mate! The game is over')
+
+if __name__ == '__main__':
+    # Initializing the game
+    ui = Ui()
+
+    # Make a turn
+    while ui.board.check_mate == False:
+        ui.turn()

@@ -26,10 +26,8 @@ class Board:
         self.check: bool = False
         self.check_mate: bool = False
 
-    def turn(self, select_piece, select_move, draw, check, check_mate):
+    def turn(self, selected_piece, position, draw, check, check_mate):
         """Performs a turn and executes all interface functions"""
-        selected_piece = select_piece()
-        position = select_move(selected_piece)
         self.recalculate(selected_piece, position)
         self.delete_self_check()
         self.turn_counter += 1

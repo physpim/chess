@@ -1,4 +1,4 @@
-from interface import Position, Board, Piece
+from game import Position, Board, Piece
 import tkinter as tk
 from itertools import product
 from functools import partial
