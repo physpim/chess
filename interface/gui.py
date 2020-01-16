@@ -5,24 +5,24 @@ from itertools import product
 
 class Gui():
     """Grafical user interface for playing chess"""
-    color_dict = {0: '#000000', 1: '#FFFFFF'}
-    piece_type_dict = {0: {0: '\u2654', 1: '\u265a'},
-                       1: {0: '\u2655', 1: '\u265b'},
-                       2: {0: '\u2656', 1: '\u265c'},
-                       3: {0: '\u2657', 1: '\u265d'},
-                       4: {0: '\u2658', 1: '\u265e'},
-                       5: {0: '\u2659', 1: '\u265f'}}
-
+    color_dict = {0: '#b0b0b0', 1: '#FFFFFF'}
+    piece_type_dict = {0: {1: '\u2654', 0: '\u265a'},
+                       1: {1: '\u2655', 0: '\u265b'},
+                       2: {1: '\u2656', 0: '\u265c'},
+                       3: {1: '\u2657', 0: '\u265d'},
+                       4: {1: '\u2658', 0: '\u265e'},
+                       5: {1: '\u2659', 0: '\u265f'}}
 
     def __init__(self):
         # Init board
-        self.board=Board()
-        # Init gui parts
-        self.root=tk.Tk()
-        self.buttons=[[], [], [], [], [], [], [], []]
-        self.fields=[[], [], [], [], [], [], [], []]
+        self.board = Board()
+        # Init root
+        self.root = tk.Tk()
+        # Create buttons/fields
+        self.buttons = [[], [], [], [], [], [], [], []]
+        self.fields = [[], [], [], [], [], [], [], []]
         for x, y in product(range(8), range(8)):
-            field_color=(x + y) % 2
+            field_color = (x + y) % 2
             self.fields[x].append(
                 tk.Frame(self.root,
                          height=50,
@@ -33,16 +33,67 @@ class Gui():
             self.fields[x][y].grid(column=x, row=y)
             self.buttons[x].append(
                 tk.Button(self.fields[x][y],
-                          text='\u2654',
                           background=Gui.color_dict[field_color],
                           activebackground='#f2ff00',
                           borderwidth=0,
-                          foreground=Gui.color_dict[int(not field_color)])
+                          font='Courier 30')
             )
             self.buttons[x][y].pack(fill='both', expand=True)
-        # Start application
+        self.draw()
+        self.turn()
         self.root.mainloop()
+
+    def turn(self):
+        """Performs all actions within a turn"""
+        # self.board.turn(self.select_piece,
+        #                 self.select_move,
+        #                 self.draw,
+        #                 self.check,
+        #                 self.check_mate)
+        self.select_piece()
+
+    def select_piece(self):
+        """Select piece to move"""
+        color = self.board.turn_color
+        for x, row in enumerate(self.buttons):
+            for y, button in enumerate(row):
+                piece = self.board.find_piece(Position(x, y))
+                if piece.color != color and \
+                   piece.moves != [] and \
+                   piece.moves != None:
+                    button.configure(
+                        command=lambda: self.show_moves(piece.moves)
+                    )
+
+    def show_moves(self, moves: list):
+        """Marks the fields where the selected piece can move to"""
+        print(moves)
+        for move in moves:
+            print(move)
+            self.buttons[move.x][move.y].configure(
+                background='#f2ff00'
+            )
+
+    def select_move(self):
+        pass
+
+    def draw(self):
+        """Draws pieces on the board"""
+        for (x, y) in product(range(8), range(8)):
+            piece = self.board.find_piece(Position(x, y))
+            if piece.color != None:
+                self.buttons[x][y].config(
+                    text=Gui.piece_type_dict[piece.type][piece.color]
+                )
+            else:
+                self.buttons[x][y].config(text='')
+
+    def check(self):
+        pass
+
+    def check_mate(self):
+        pass
 
 
 if __name__ == '__main__':
-    g=Gui()
+    g = Gui()
