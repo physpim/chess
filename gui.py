@@ -1,4 +1,4 @@
-from game import Position, Board, Piece
+from interface import Position, Board, Piece
 import tkinter as tk
 from itertools import product
 from functools import partial
@@ -13,19 +13,26 @@ class Gui():
                        3: {0: '\u2657', 1: '\u265d'},
                        4: {0: '\u2658', 1: '\u265e'},
                        5: {0: '\u2659', 1: '\u265f'}}
+    turn_color_dict = {0: 'White', 1: 'Black'}
 
     def __init__(self):
         # Init board
         self.board = Board()
         # Init root
         self.root = tk.Tk()
+        # Create general structure
+        self.board_frame = tk.Frame(self.root)
+        self.board_frame.pack()
+        self.test_frame = tk.Label(
+            self.root, text='Welcome', font='Courier 20')
+        self.test_frame.pack()
         # Create buttons/fields
         self.buttons = [[], [], [], [], [], [], [], []]
         self.fields = [[], [], [], [], [], [], [], []]
         for x, y in product(range(8), range(8)):
             field_color = (x + y) % 2
             self.fields[x].append(
-                tk.Frame(self.root,
+                tk.Frame(self.board_frame,
                          height=50,
                          width=50,
                          background=Gui.color_dict[field_color])
@@ -41,21 +48,14 @@ class Gui():
             )
             self.buttons[x][y].pack(fill='both', expand=True)
         self.draw()
-        self.turn()
-        self.root.mainloop()
-
-    def turn(self):
-        """Performs all actions within a turn"""
-        # self.board.turn(self.select_piece,
-        #                 self.select_move,
-        #                 self.draw,
-        #                 self.check,
-        #                 self.check_mate)
         self.select_piece()
+        self.root.mainloop()
 
     def select_piece(self):
         """Select piece to move"""
         color = self.board.turn_color
+        color_str = Gui.turn_color_dict[color]
+        self.test_frame.configure(text=(color_str + ', it\'s your turn'))
         for x, rows in enumerate(self.buttons):
             for y, button in enumerate(rows):
                 piece = self.board.find_piece(Position(x, y))
@@ -105,10 +105,12 @@ class Gui():
                 self.buttons[x][y].config(text='')
 
     def check(self):
-        pass
+        """Runs when game is check"""
+        self.test_frame.configure(text='Check!')
 
     def check_mate(self):
-        pass
+        """Runs when game is check mate"""
+        self.test_frame.configure(text='Check mate! The game is over...')
 
     def reset_buttons(self):
         """Resets the buttons colors and commands"""
