@@ -4,6 +4,7 @@ from copy import deepcopy
 
 class Board:
     """Class that defines the board and incorporates all rules"""
+
     def __init__(self):
         # Initialize board by creating all pieces in a chess game
         self.pieces = []
@@ -38,8 +39,8 @@ class Board:
             self.check_mate = self.ischeckmate(self.turn_color)
             if self.check_mate == True:
                 check_mate()
-            else: check()
-
+            else:
+                check()
 
     def find_piece(self, position: Position) -> Piece:
         """Finds piece on position and returns the piece
