@@ -1,11 +1,12 @@
 from game import Position, Board, Piece
 import tkinter as tk
 from itertools import product
+from functools import partial
 
 
 class Gui():
     """Grafical user interface for playing chess"""
-    color_dict = {0: '#b0b0b0', 1: '#FFFFFF'}
+    color_dict = {0: '#FFFFFF', 1: '#b0b0b0'}
     piece_type_dict = {0: {1: '\u2654', 0: '\u265a'},
                        1: {1: '\u2655', 0: '\u265b'},
                        2: {1: '\u2656', 0: '\u265c'},
@@ -55,23 +56,26 @@ class Gui():
     def select_piece(self):
         """Select piece to move"""
         color = self.board.turn_color
-        for x, row in enumerate(self.buttons):
-            for y, button in enumerate(row):
+        for x, rows in enumerate(self.buttons):
+            for y, button in enumerate(rows):
                 piece = self.board.find_piece(Position(x, y))
                 if piece.color != color and \
                    piece.moves != [] and \
                    piece.moves != None:
+                    print(piece.position)
+                    print(piece.moves)
+                    func = partial(self.show_moves, piece.moves)
                     button.configure(
-                        command=lambda: self.show_moves(piece.moves)
+                        command=func
                     )
 
     def show_moves(self, moves: list):
         """Marks the fields where the selected piece can move to"""
-        print(moves)
+        self.reset_buttons()
         for move in moves:
-            print(move)
             self.buttons[move.x][move.y].configure(
-                background='#f2ff00'
+                background='#f2ff00',
+                command=partial(print, 'this is a movable field')
             )
 
     def select_move(self):
@@ -93,6 +97,15 @@ class Gui():
 
     def check_mate(self):
         pass
+
+    def reset_buttons(self):
+        """Resets the buttons colors and commands"""
+        for x, y in product(range(8), range(8)):
+            button = self.buttons[x][y]
+            button.configure(
+                command=False,
+                background=Gui.color_dict[(x + y) % 2]
+            )
 
 
 if __name__ == '__main__':
