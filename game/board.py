@@ -25,6 +25,7 @@ class Board:
         self.turn_color = 0
         self.check: bool = False
         self.check_mate: bool = False
+        self.history = []
 
     def turn(self, selected_piece, position, draw, check, check_mate):
         """Performs a turn and executes all interface functions"""
@@ -82,16 +83,23 @@ class Board:
 
     def move(self, selected_piece: Piece, position: Position):
         """Moves selected_piece to position and captures if needed"""
+        self.history.append({'piece': selected_piece,
+                             'from': selected_piece.position,
+                             'to': position})
+
+        # Normal moving and capturing
         captured_piece = self.find_piece(position)
         if captured_piece.color != None:
             captured_piece.alive = False
             captured_piece.moves = []
         selected_piece.position = position
-        selected_piece.moved += 1
+
+        # Check for en passant
         if selected_piece.type == 5:
             for captured_piece in selected_piece.en_passant:
-                captured_piece.alive = False
-                captured_piece.moves = []
+                if abs(captured_piece.position - position) == 1:
+                    captured_piece.alive = False
+                    captured_piece.moves = []
             selected_piece.en_passant = []
 
     def king(self, piece: Piece):
@@ -214,9 +222,13 @@ class Board:
             piece.en_passant = []
             for position in neighbours:
                 piece_on_field = self.find_piece(position)
-                if piece_on_field.type == 5 and piece_on_field.moved == 1:
-                    piece.moves.append(position + directions[piece.color])
-                    piece.en_passant.append(piece_on_field)
+                if piece_on_field.color != None:
+                    if self.history[-1]['piece'] == piece_on_field:
+                        distance = abs(self.history[-1]['from'] -
+                                    self.history[-1]['to'])
+                        if distance == 2:
+                            piece.moves.append(position + directions[piece.color])
+                            piece.en_passant.append(piece_on_field)
 
     def ischeck(self, color: int) -> bool:
         """Returns if color is check"""

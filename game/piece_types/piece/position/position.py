@@ -12,6 +12,12 @@ class Position:
         y = self.y + other.y
         return Position(x, y)
 
+    def __sub__(self, other):
+    # Overloading the add (+) operator
+        x = self.x - other.x
+        y = self.y - other.y
+        return Position(x, y)
+
     def __rmul__(self, factor: int):
         x = factor * self.x
         y = factor * self.y
@@ -20,6 +26,11 @@ class Position:
     def __eq__(self, other) -> bool:
         # Overloading the equals (==) operator
         return [self.x, self.y] == [other.x, other.y]
+
+    def __abs__(self) -> float:
+        x = self.x
+        y = self.y
+        return (x ** 2 + y ** 2) ** 0.5
 
     def __str__(self) -> str:
         return 'Position(' + str(self.x) + ',' + str(self.y) + ')'
