@@ -54,8 +54,6 @@ class Gui():
     def select_piece(self):
         """Select piece to move"""
         color = self.board.turn_color
-        color_str = Gui.turn_color_dict[color]
-        self.test_frame.configure(text=(color_str + ', it\'s your turn'))
         for x, rows in enumerate(self.buttons):
             for y, button in enumerate(rows):
                 piece = self.board.find_piece(Position(x, y))
