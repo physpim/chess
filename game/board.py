@@ -124,6 +124,7 @@ class Board:
 
     def king(self, piece: Piece):
         """Updates the king's piece.moves"""
+        # Normal moves
         directions = [Position(0, 1), Position(1, 0),
                       Position(0, -1), Position(-1, 0),
                       Position(1, 1), Position(-1, -1),
@@ -135,6 +136,16 @@ class Board:
                 if piece_on_field.color == None or \
                    piece_on_field.color != piece.color:
                     piece.moves.append(field)
+
+        # Castling
+        piece_history = [moves['piece'] for moves in self.history]
+        for piece_find in self.pieces:
+            if piece.color == piece_find.color and \
+                    not piece_find in piece_history and \
+                    not piece in piece_history:
+                rook = piece_find
+                # Insert: look if fields in between are empty and fields the king hops over and to are not attacked
+                pass
 
     def queen(self, piece: Piece):
         """Updates the queen's piece.moves"""
