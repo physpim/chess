@@ -94,6 +94,23 @@ class Board:
         self.history.append({'piece': selected_piece,
                              'from': selected_piece.position,
                              'to': position})
+ # Check for castling
+        if selected_piece.type == 0:
+            move_vector = selected_piece.position - position
+            distance = abs(move_vector)
+            if distance == 2:
+                rook_distances = []
+                rooks = []
+                for piece_find in self.pieces:
+                    if selected_piece.color == piece_find.color and \
+                            piece_find.type == 2:
+                        rooks.append(piece_find)
+                        rook_distances.append(
+                            abs(piece_find.position - position)
+                            )
+                index = rook_distances.index(min(rook_distances))
+                new_rook_position = selected_piece.position - (move_vector // 2)
+                rooks[index].position = new_rook_position
 
         # Normal moving and capturing
         captured_piece = self.find_piece(position)
@@ -114,16 +131,9 @@ class Board:
         promotion_rows = {0: 7, 1: 0}
         if selected_piece.type == 5 and \
            selected_piece.position.y == promotion_rows[selected_piece.color]:
-            self.promote(selected_piece, ask_promotion_type)
-
-        # Check for castling
-        # INSERT TO MOVE ROOK OVER KING WHEN CASTLING
-
-    def promote(self, piece: Piece, ask_promotion_type):
-        """Regulates promotion of a pawn"""
-        promotion_type = ask_promotion_type()
-        piece.type = promotion_type
-        piece.piece_number = None
+            promotion_type = ask_promotion_type()
+            selected_piece.type = promotion_type
+            selected_piece.piece_number = None
 
     def king(self, piece: Piece):
         """Updates the king's piece.moves"""
@@ -155,11 +165,19 @@ class Board:
                     field = piece.position + direction * Position(n, 0)
                     piece_on_field = self.find_piece(field)
                     if piece_on_field.color != None:
-                        # INSERT TO CHECK IF KING MOVES OVER ATACKED FIELD
                         break
                 else:
-                    print(n)
-                    piece.moves.append(new_king_position)
+                    copy_board = deepcopy(self)
+                    for copy_piece in copy_board.pieces:
+                        if copy_piece == piece:
+                            break
+                    copy_board.recalculate(
+                        copy_piece,
+                        copy_piece.position + direction * Position(1, 0),
+                        lambda: 1
+                    )
+                    if not copy_board.ischeck(copy_piece.color):
+                        piece.moves.append(new_king_position)
 
     def queen(self, piece: Piece):
         """Updates the queen's piece.moves"""

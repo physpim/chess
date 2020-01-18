@@ -37,6 +37,9 @@ class Position:
 
     def __repr__(self):
         return str(self)
+    
+    def __floordiv__(self, other):
+        return Position(self.x // other, self.y // other)
 
     def within_board(self) -> bool:
         if 0 <= self.x <= 7 and 0 <= self.y <= 7:
