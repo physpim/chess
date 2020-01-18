@@ -1,5 +1,6 @@
 from .piece_types import Bishop, King, Knight, Pawn, Queen, Rook, Position, Piece
 from copy import deepcopy
+from functools import partial
 
 
 class Board:
@@ -29,7 +30,7 @@ class Board:
 
     def turn(self, selected_piece, position, draw, check, check_mate):
         """Performs a turn and executes all interface functions"""
-        self.recalculate(selected_piece, position)
+        self.recalculate(selected_piece, position, lambda: 1)
         self.delete_self_check()
         self.turn_counter += 1
         self.turn_color = int(not self.turn_color)
@@ -52,12 +53,16 @@ class Board:
         else:
             return Piece(None, None, None, None, None)
 
-    def recalculate(self, selected_piece: Piece, position: Position):
+    def recalculate(self,
+                    selected_piece: Piece,
+                    position: Position,
+                    ask_promotion_type):
         """Recalculates board when selected_piece moves to Position"""
         type_funcs = {0: self.king, 1: self.queen, 2: self.rook,
                       3: self.bishop, 4: self.knight, 5: self.pawn}
         # Move the selected piece and capture if needed
-        self.move(selected_piece, position)
+        self.move(selected_piece, position,
+                  lambda: ask_promotion_type())
         # Recalculate the moves for all pieces
         for piece in self.pieces:
             piece.moves = []
@@ -75,13 +80,16 @@ class Board:
                     copy_board = deepcopy(self)
                     index = copy_board.pieces.index(piece)
                     copy_piece = copy_board.pieces[index]
-                    copy_board.recalculate(copy_piece, field)
+                    copy_board.recalculate(copy_piece, field, lambda: 1)
                     if copy_board.ischeck(copy_piece.color):
                         remove_fields.append(field)
                 for elem in remove_fields:
                     piece.moves.remove(elem)
 
-    def move(self, selected_piece: Piece, position: Position):
+    def move(self,
+             selected_piece: Piece,
+             position: Position,
+             ask_promotion_type):
         """Moves selected_piece to position and captures if needed"""
         self.history.append({'piece': selected_piece,
                              'from': selected_piece.position,
@@ -101,6 +109,18 @@ class Board:
                     captured_piece.alive = False
                     captured_piece.moves = []
             selected_piece.en_passant = []
+
+        # Check for pawn promotion
+        promotion_rows = {0: 7, 1: 0}
+        if selected_piece.type == 5 and \
+           selected_piece.position.y == promotion_rows[selected_piece.color]:
+            self.promote(selected_piece, ask_promotion_type)
+
+    def promote(self, piece: Piece, ask_promotion_type):
+        """Regulates promotion of a pawn"""
+        promotion_type = ask_promotion_type()
+        piece.type = promotion_type
+        piece.piece_number = None
 
     def king(self, piece: Piece):
         """Updates the king's piece.moves"""
@@ -225,9 +245,11 @@ class Board:
                 if piece_on_field.color != None:
                     if self.history[-1]['piece'] == piece_on_field:
                         distance = abs(self.history[-1]['from'] -
-                                    self.history[-1]['to'])
+                                       self.history[-1]['to'])
                         if distance == 2:
-                            piece.moves.append(position + directions[piece.color])
+                            piece.moves.append(
+                                position + directions[piece.color]
+                            )
                             piece.en_passant.append(piece_on_field)
 
     def ischeck(self, color: int) -> bool:

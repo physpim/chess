@@ -6,6 +6,7 @@ from functools import partial
 
 class Gui():
     """Grafical user interface for playing chess"""
+    font = 'Courier 20'
     color_dict = {0: '#b0b0b0', 1: '#ffffff'}
     piece_type_dict = {0: {0: '\u2654', 1: '\u265a'},
                        1: {0: '\u2655', 1: '\u265b'},
@@ -24,8 +25,12 @@ class Gui():
         self.board_frame = tk.Frame(self.root)
         self.board_frame.pack()
         self.test_frame = tk.Label(
-            self.root, text='Welcome', font='Courier 20')
+            self.root, text='Welcome', font=Gui.font)
         self.test_frame.pack()
+        self.user_input = tk.Entry(self.root, font=Gui.font)
+        self.user_input.pack()
+        self.user_input_given = tk.IntVar(master=self.user_input, name='piece_type',value=-1)
+
         # Create buttons/fields
         self.buttons = [[], [], [], [], [], [], [], []]
         self.fields = [[], [], [], [], [], [], [], []]
@@ -50,6 +55,24 @@ class Gui():
         self.draw()
         self.select_piece()
         self.root.mainloop()
+
+    def ask_promotion_type(self):
+        """Asks the user which piece to promote"""
+        self.user_input.bind('<Return>', self.promote2input)
+        self.test_frame.configure(text='Which piece do you choose?')
+        self.reset_buttons()
+        self.user_input_given.set(-1)
+        self.user_input.wait_variable(name='piece_type')
+        return self.user_input_given.get()
+
+    def promote2input(self, event) -> int:
+        """Gets the entered text from the entry box"""
+        type_dict = {'king': 0, 'queen': 1, 'rook': 2,
+                     'bishop': 3, 'knight': 4, 'pawn': 5}
+        promotion_type = type_dict[self.user_input.get()]
+        # self.board.promote(piece, promotion_type)
+        self.user_input.bind('<Return>')
+        self.user_input_given.set(promotion_type)
 
     def select_piece(self):
         """Select piece to move"""
@@ -77,7 +100,7 @@ class Gui():
     def select_move(self, piece, position):
         """Runs when player selects where to move to"""
         self.reset_buttons()
-        self.board.recalculate(piece, position)
+        self.board.recalculate(piece, position, self.ask_promotion_type)
         self.board.delete_self_check()
         self.board.turn_counter += 1
         self.board.turn_color = int(not self.board.turn_color)
