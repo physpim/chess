@@ -28,8 +28,11 @@ class Gui():
             self.root, text='Welcome', font=Gui.font)
         self.test_frame.pack()
         self.user_input = tk.Entry(self.root, font=Gui.font)
+        self.user_input.configure(state='readonly')
         self.user_input.pack()
-        self.user_input_given = tk.IntVar(master=self.user_input, name='piece_type',value=-1)
+        self.user_input_given = tk.IntVar(master=self.user_input,
+                                          name='piece_type',
+                                          value=-1)
 
         # Create buttons/fields
         self.buttons = [[], [], [], [], [], [], [], []]
@@ -59,11 +62,15 @@ class Gui():
     def ask_promotion_type(self):
         """Asks the user which piece to promote"""
         self.user_input.bind('<Return>', self.promote2input)
-        self.test_frame.configure(text='Which piece do you choose?')
+        self.test_frame.configure(text='Promote to type:')
+        self.user_input.configure(state='normal')
         self.reset_buttons()
         self.user_input_given.set(-1)
         self.user_input.wait_variable(name='piece_type')
-        return self.user_input_given.get()
+        user_input = self.user_input_given.get()
+        self.user_input.delete(0, len(self.user_input.get()))
+        self.user_input.configure(state='readonly')
+        return user_input
 
     def promote2input(self, event) -> int:
         """Gets the entered text from the entry box"""
@@ -109,9 +116,15 @@ class Gui():
             self.board.check_mate = \
                 self.board.ischeckmate(self.board.turn_color)
             if self.board.check_mate == True:
-                self.check_mate()
+                self.test_frame.configure(
+                    text='Check mate!'
+                )
             else:
-                self.check()
+                self.test_frame.configure(text='Check!')
+        else:
+            message = Gui.turn_color_dict[self.board.turn_color] + \
+                      ', it\'s your turn'
+            self.test_frame.configure(text=message)
         self.select_piece()
 
     def draw(self):
