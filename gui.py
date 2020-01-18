@@ -104,7 +104,7 @@ class Gui():
                 command=partial(self.select_move, piece, move)
             )
 
-    def select_move(self, piece, position):
+    def select_move(self, piece: Piece, position):
         """Runs when player selects where to move to"""
         self.reset_buttons()
         self.board.recalculate(piece, position, self.ask_promotion_type)
@@ -123,7 +123,7 @@ class Gui():
                 self.test_frame.configure(text='Check!')
         else:
             message = Gui.turn_color_dict[self.board.turn_color] + \
-                      ', it\'s your turn'
+                ', it\'s your turn'
             self.test_frame.configure(text=message)
         self.select_piece()
 
@@ -137,14 +137,6 @@ class Gui():
                 )
             else:
                 self.buttons[x][y].config(text='')
-
-    def check(self):
-        """Runs when game is check"""
-        self.test_frame.configure(text='Check!')
-
-    def check_mate(self):
-        """Runs when game is check mate"""
-        self.test_frame.configure(text='Check mate! The game is over...')
 
     def reset_buttons(self):
         """Resets the buttons colors and commands"""
