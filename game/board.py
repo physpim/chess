@@ -116,6 +116,9 @@ class Board:
            selected_piece.position.y == promotion_rows[selected_piece.color]:
             self.promote(selected_piece, ask_promotion_type)
 
+        # Check for castling
+        # INSERT TO MOVE ROOK OVER KING WHEN CASTLING
+
     def promote(self, piece: Piece, ask_promotion_type):
         """Regulates promotion of a pawn"""
         promotion_type = ask_promotion_type()
@@ -141,11 +144,22 @@ class Board:
         piece_history = [moves['piece'] for moves in self.history]
         for piece_find in self.pieces:
             if piece.color == piece_find.color and \
+                    piece_find.type == 2 and \
                     not piece_find in piece_history and \
                     not piece in piece_history:
                 rook = piece_find
-                # Insert: look if fields in between are empty and fields the king hops over and to are not attacked
-                pass
+                difference = rook.position.x - piece.position.x
+                direction = abs(difference) // difference
+                new_king_position = piece.position + direction * Position(2, 0)
+                for n in range(1, abs(difference)):
+                    field = piece.position + direction * Position(n, 0)
+                    piece_on_field = self.find_piece(field)
+                    if piece_on_field.color != None:
+                        # INSERT TO CHECK IF KING MOVES OVER ATACKED FIELD
+                        break
+                else:
+                    print(n)
+                    piece.moves.append(new_king_position)
 
     def queen(self, piece: Piece):
         """Updates the queen's piece.moves"""
